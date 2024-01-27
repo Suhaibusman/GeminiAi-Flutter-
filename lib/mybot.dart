@@ -33,6 +33,7 @@ class _ChatScreenState extends State<ChatScreen> {
     typing.add(bot);
     allMessages.insert(0, message);
     setState(() {});
+
     var data = {
       "contents": [
         {
@@ -42,28 +43,30 @@ class _ChatScreenState extends State<ChatScreen> {
         }
       ]
     };
-    http
-        .post(Uri.parse(ourUrl), headers: header, body: jsonEncode(data))
-        .then((value) {
-      if (value.statusCode == 200) {
-        var response = jsonDecode(value.body);
-        // ignore: avoid_print
+
+    try {
+      var response = await http.post(Uri.parse(ourUrl),
+          headers: header, body: jsonEncode(data));
+
+      if (response.statusCode == 200) {
+        var responseData = jsonDecode(response.body);
 
         setState(() {
           ChatMessage message2 = ChatMessage(
             user: bot,
-            text: response['candidates'][0]['content']['parts'][0]['text'],
+            text: responseData['candidates'][0]['content']['parts'][0]['text'],
             createdAt: DateTime.now(),
           );
 
           allMessages.insert(0, message2);
         });
       } else {
-        showAboutDialog(context: context, children: [Text(value.body)]);
+        showAboutDialog(context: context, children: [Text(response.body)]);
       }
-    }).catchError((e) {
+    } catch (e) {
       showAboutDialog(context: context, children: [Text(e.toString())]);
-    });
+    }
+
     typing.remove(bot);
     setState(() {});
   }
@@ -72,7 +75,16 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Gemini AI'),
+          leading: IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
+          title: const Text(
+            'Gemini AI',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          centerTitle: true,
           backgroundColor: const Color.fromRGBO(
             0,
             166,
@@ -87,6 +99,23 @@ class _ChatScreenState extends State<ChatScreen> {
             getData(message);
           },
           messages: allMessages,
+          inputOptions: const InputOptions(
+              cursorStyle: CursorStyle(
+            color: Color.fromRGBO(
+              0,
+              166,
+              126,
+              1,
+            ),
+          )),
+          messageOptions: const MessageOptions(
+            currentUserContainerColor: Color.fromRGBO(
+              0,
+              166,
+              126,
+              1,
+            ),
+          ),
         ));
   }
 }
