@@ -48,7 +48,6 @@ class _ChatScreenState extends State<ChatScreen> {
       if (value.statusCode == 200) {
         var response = jsonDecode(value.body);
         // ignore: avoid_print
-        print(response['candidates'][0]['content']['parts'][0]['text']);
 
         setState(() {
           ChatMessage message2 = ChatMessage(
@@ -69,26 +68,25 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {});
   }
 
-  //   AIzaSyCZpXFRgBMJ_2J7pk-E810v9eFrkavPgPM
-
-  //   curl \
-  // -H 'Content-Type: application/json' \
-  // -d '{"contents":[{"parts":[{"text":"Write a story about a magic backpack"}]}]}' \
-  // -X POST https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyCZpXFRgBMJ_2J7pk-E810v9eFrkavPgPM
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Gemini AI'),
-          backgroundColor: const Color.fromARGB(255, 0, 170, 255),
+          backgroundColor: const Color.fromRGBO(
+            0,
+            166,
+            126,
+            1,
+          ),
         ),
         body: DashChat(
-            typingUsers: typing,
-            currentUser: currentUser,
-            onSend: (ChatMessage message) {
-              getData(message);
-            },
-            messages: allMessages));
+          typingUsers: typing,
+          currentUser: currentUser,
+          onSend: (ChatMessage message) {
+            getData(message);
+          },
+          messages: allMessages,
+        ));
   }
 }
